@@ -26,13 +26,21 @@ public class EnergySource{
 	public boolean useEnergy(final long units){
 		if(units > 0 && level >= units){
 			level -= units;
-			return true;
+            logger.info("Used units : " + units + " level : " + level);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return true;
 		}
 		return false;
 	}
 
 	public boolean stopEnergySource(){
-		return false;
+        logger.debug("Change the Status.");
+        keepRunning = false;
+		return keepRunning;
 	}
 
 	public void replenish(){
