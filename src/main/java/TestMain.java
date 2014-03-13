@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 public class TestMain {
     private static Logger logger =
             LoggerFactory.getLogger(TestMain.class);
-    private static final EnergySource energy = new EnergySource();
+    private static final EnergySource energy = EnergySource.create();
     public static void main(String[] args) throws InterruptedException{
         logger.debug("Ready come to test Energy.");
 

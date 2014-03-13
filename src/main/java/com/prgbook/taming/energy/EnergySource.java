@@ -3,6 +3,11 @@ package com.prgbook.taming.energy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 public class EnergySource{
     private static Logger logger =
             LoggerFactory.getLogger(EnergySource.class);
@@ -10,14 +15,26 @@ public class EnergySource{
 	private final long MAXLEVEL = 100;
 	private long level = MAXLEVEL;
 	private boolean keepRunning = true;
+    private static final ScheduledExecutorService replenishTimer = Executors.newScheduledThreadPool(10);
+    private ScheduledFuture<?> replenishTask;
 
-	public EnergySource(){
-		new Thread(new Runnable(){
-			public void run(){
-				replenish();
-			}
-		}).start();
+	private EnergySource(){
 	}
+
+    public static EnergySource create() {
+        EnergySource energySource = new EnergySource();
+        energySource.init();
+        return energySource;
+    }
+
+    private void init() {
+        replenishTask = replenishTimer.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                replenish();
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
 
 	public long getUnitsAvailable(){
 		return level;
@@ -40,7 +57,8 @@ public class EnergySource{
 	public boolean stopEnergySource(){
         logger.debug("Change the Status.");
         keepRunning = false;
-		return keepRunning;
+        replenishTask.cancel(false);
+        return keepRunning;
 	}
 
 	public void replenish(){

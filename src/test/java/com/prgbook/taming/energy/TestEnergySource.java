@@ -14,7 +14,7 @@ public class TestEnergySource{
 	private static Logger logger =
 		LoggerFactory.getLogger(TestEnergySource.class);
 
-    private static final EnergySource energy = new EnergySource();
+    private static final EnergySource energy = EnergySource.create();
 	@Test
 	public void testRunningEnergy() throws InterruptedException{
 		logger.debug("Ready come to test Energy.");
@@ -37,6 +37,7 @@ public class TestEnergySource{
         logger.debug("Energy level at end: " + energy.getUnitsAvailable());
 		energy.stopEnergySource();
 		logger.debug("End of the test.");
+        Thread.sleep(1000000);
 	}
 
     private static boolean done = false;
