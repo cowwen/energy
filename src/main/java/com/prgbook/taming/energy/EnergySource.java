@@ -1,6 +1,12 @@
 package com.prgbook.taming.energy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class EnergySource{
+    private static Logger logger =
+            LoggerFactory.getLogger(EnergySource.class);
+
 	private final long MAXLEVEL = 100;
 	private long level = MAXLEVEL;
 	private boolean keepRunning = true;
@@ -31,6 +37,7 @@ public class EnergySource{
 
 	public void replenish(){
 		while(keepRunning){
+            logger.debug("Ready add level");
 			if(level < MAXLEVEL) level++;
 
 			try{

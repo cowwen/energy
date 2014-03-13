@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TestEnergySource{
-	public static Logger logger =
+	private static Logger logger =
 		LoggerFactory.getLogger(TestEnergySource.class);
 	
 	@Test
@@ -14,8 +14,9 @@ public class TestEnergySource{
 		EnergySource energy = new EnergySource();
 		energy.useEnergy(10);
 		energy.useEnergy(20);
-		Thread.sleep(1000);
+		Thread.sleep(10000);
 		energy.stopEnergySource();
+        Thread.sleep(10000);
 		logger.debug("End of the test.");
 	}
 }
