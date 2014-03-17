@@ -2,6 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+/*
+* bad code, This example will cause race condition,
+* but don't always be.
+* */
 public class EnergySource{
 
 	private final long MAXLEVEL = 100;
@@ -31,14 +35,12 @@ public class EnergySource{
 
 	public boolean useEnergy(final long units){
 		if(units > 0 && level >= units){
-			level -= units;
-
             try{
-				Thread.sleep(1000);
-			}catch(InterruptedException ex){
-				ex.printStackTrace();
-			}
-
+                Thread.sleep(100);
+            }catch(InterruptedException ex){
+                ex.printStackTrace();
+            }
+			level -= units;
 			return true;
 		}
 		return false;
