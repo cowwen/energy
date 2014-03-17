@@ -11,7 +11,7 @@ public class TestEnergySource{
 	@Test
 	public void testRunningEnergy() throws InterruptedException{
 		logger.debug("Ready come to test Energy.");
-		EnergySource energy = new EnergySource();
+		EnergySource energy = EnergySource.create();
 		energy.useEnergy(10);
 		energy.useEnergy(20);
 		Thread.sleep(10000);
