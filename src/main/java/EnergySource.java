@@ -4,7 +4,7 @@ import java.util.concurrent.*;
 
 public class EnergySource{
 
-	private final long MAXLEVEL = 1000000;
+	private final long MAXLEVEL = 100;
 	private long level = MAXLEVEL;
 	private boolean keepRunning = true;
 
@@ -32,13 +32,13 @@ public class EnergySource{
 	public boolean useEnergy(final long units){
 		if(units > 0 && level >= units){
 			level -= units;
-            /*
+
             try{
 				Thread.sleep(1000);
 			}catch(InterruptedException ex){
 				ex.printStackTrace();
 			}
-			*/
+
 			return true;
 		}
 		return false;
@@ -86,12 +86,12 @@ public class EnergySource{
             }
         };
         final long startTime = System.nanoTime();
-        for(int i = 0; i < 100000; i++){
+        for(int i = 0; i < 10; i++){
         	task.add(run);
         }
         List<Future<?>> results = new ArrayList<Future<?>>();
 
-        ExecutorService service = Executors.newFixedThreadPool(10);
+        ExecutorService service = Executors.newFixedThreadPool(4);
         service.invokeAll(task);
         //System.out.println("Ready stop the energy source.");
         energy.stopEnergySource();
