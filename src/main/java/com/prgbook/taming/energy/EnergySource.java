@@ -36,11 +36,11 @@ public class EnergySource{
         }, 0, 1, TimeUnit.SECONDS);
     }
 
-	public long getUnitsAvailable(){
+	public synchronized long getUnitsAvailable(){
 		return level;
 	}
 
-	public boolean useEnergy(final long units){
+	public synchronized boolean useEnergy(final long units){
 		if(units > 0 && level >= units){
 			level -= units;
             logger.info("Used units : " + units + " level : " + level);
@@ -54,14 +54,14 @@ public class EnergySource{
 		return false;
 	}
 
-	public boolean stopEnergySource(){
+	public synchronized boolean stopEnergySource(){
         logger.debug("Change the Status.");
         keepRunning = false;
         replenishTask.cancel(false);
         return keepRunning;
 	}
 
-	public void replenish(){
+	public synchronized void replenish(){
 		while(keepRunning){
             logger.debug("Ready add level");
 			if(level < MAXLEVEL) level++;
