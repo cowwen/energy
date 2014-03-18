@@ -1,5 +1,8 @@
 package com.prgbook.taming.energy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -8,10 +11,14 @@ import java.util.concurrent.*;
  * Created by cowwen on 14-3-17.
  */
 public class MainEnergySource {
+    private static Logger logger =
+            LoggerFactory.getLogger(MainEnergySource.class);
+
     private static final EnergySource energySource = EnergySource.create();
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
         final long start = System.nanoTime();
+        logger.debug("Start!");
         List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 
         Callable<Object> task = new Callable<Object>() {

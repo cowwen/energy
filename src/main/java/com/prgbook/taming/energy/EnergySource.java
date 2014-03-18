@@ -18,9 +18,6 @@ public class EnergySource{
             Executors.newScheduledThreadPool(10);
     private ScheduledFuture<?> replenishTask;
 
-
-	private boolean keepRunning = true;
-
 	private EnergySource(){ }
 
     private void init() {
@@ -52,9 +49,11 @@ public class EnergySource{
 
 	public void stopEnergySource() {
         replenishTask.cancel(false);
+        replenishTimer.shutdown();
     }
 
 	public void replenish() {
+        logger.debug("level : " + level);
         if (level < MAX_LEVEL) {
             level++;
         }
