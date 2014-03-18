@@ -12,7 +12,7 @@ public class EnergySource{
     private static Logger logger =
             LoggerFactory.getLogger(EnergySource.class);
 
-	private final long MAX_LEVEL = 100;
+	private final long MAX_LEVEL = 1000000;
 	private long level = MAX_LEVEL;
     private static final ScheduledExecutorService replenishTimer =
             Executors.newScheduledThreadPool(10);
