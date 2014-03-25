@@ -8,15 +8,20 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class EnergySource{
     private static Logger logger =
             LoggerFactory.getLogger(EnergySource.class);
 
 	public static final long MAXLEVEL = 10000;
-    private final AtomicLong level = new AtomicLong(MAXLEVEL);
+    private long level = MAXLEVEL;
+    private long usage = 0;
     private static final ScheduledExecutorService replenishTimer = Executors.newScheduledThreadPool(10);
     private ScheduledFuture<?> replenishTask;
+
+    private final ReadWriteLock monitor = new ReentrantReadWriteLock();
 
 	private EnergySource(){
 	}
@@ -37,20 +42,36 @@ public class EnergySource{
     }
 
 	public long getUnitsAvailable(){
-		return level.get();
-	}
+        monitor.readLock().lock();
+        try {
+            return level;
+        } finally {
+            monitor.readLock().unlock();
+        }
+    }
+
+    public long getUsageCount() {
+        monitor.readLock().lock();
+        try {
+            return usage;
+        } finally {
+            monitor.readLock().unlock();
+        }
+    }
 
 	public boolean useEnergy(final long units) {
-        boolean flag = false;
-        while (!flag) {
-            final long currentLevel = level.get();
-            if (units > 0 && currentLevel >= units) {
-                flag = level.compareAndSet(currentLevel, currentLevel - units);
-                logger.info("Used units : " + units + " level : " + level.get() +
-                        " flag:" + flag + " currentLevel:" + currentLevel + " getLevel:" + level.get());
+        monitor.writeLock().lock();
+        try {
+            if (units > 0 && level > units) {
+                level -= units;
+                usage++;
+                return true;
+            }else{
+                return false;
             }
+        } finally {
+            monitor.writeLock().unlock();
         }
-        return flag;
     }
 
 	public synchronized void stopEnergySource(){
@@ -60,7 +81,12 @@ public class EnergySource{
 	}
 
     public void replenish() {
-        //logger.debug("Ready add level");
-        if (level.get() < MAXLEVEL) level.incrementAndGet();
+        monitor.writeLock().lock();
+
+        try {
+            if (level < MAXLEVEL) level++;
+        } finally {
+            monitor.writeLock().unlock();
+        }
     }
 }

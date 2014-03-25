@@ -46,7 +46,7 @@ public class MainEnergySource {
         final double time = (end - start) / (1.0e9);
 
         System.out.println("running time: " + time + " available energy: "
-                + energySource.getUnitsAvailable() );
+                + energySource.getUnitsAvailable() + " usage:" + energySource.getUsageCount());
 
     }
 }
