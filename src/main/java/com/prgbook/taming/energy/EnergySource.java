@@ -41,13 +41,16 @@ public class EnergySource{
 	}
 
 	public boolean useEnergy(final long units) {
-        final long currentLevel = level.get();
-        if (units > 0 && currentLevel >= units) {
-            boolean flag = level.compareAndSet(currentLevel, currentLevel - units);
-            //logger.info("Used units : " + units + " level : " + level.get());
-            return flag;
+        boolean flag = false;
+        while (!flag) {
+            final long currentLevel = level.get();
+            if (units > 0 && currentLevel >= units) {
+                flag = level.compareAndSet(currentLevel, currentLevel - units);
+                logger.info("Used units : " + units + " level : " + level.get() +
+                        " flag:" + flag + " currentLevel:" + currentLevel + " getLevel:" + level.get());
+            }
         }
-        return false;
+        return flag;
     }
 
 	public synchronized void stopEnergySource(){
