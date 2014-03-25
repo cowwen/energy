@@ -7,14 +7,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class EnergySource{
     private static Logger logger =
             LoggerFactory.getLogger(EnergySource.class);
 
 	public static final long MAXLEVEL = 10000;
-	private long level = MAXLEVEL;
-	private boolean keepRunning = true;
+    private final AtomicLong level = new AtomicLong(MAXLEVEL);
     private static final ScheduledExecutorService replenishTimer = Executors.newScheduledThreadPool(10);
     private ScheduledFuture<?> replenishTask;
 
@@ -36,29 +36,28 @@ public class EnergySource{
         }, 0, 1, TimeUnit.SECONDS);
     }
 
-	public synchronized long getUnitsAvailable(){
-		return level;
+	public long getUnitsAvailable(){
+		return level.get();
 	}
 
-	public synchronized boolean useEnergy(final long units){
-		if(units > 0 && level >= units){
-			level -= units;
-            logger.info("Used units : " + units + " level : " + level);
-            return true;
-		}
-		return false;
-	}
+	public boolean useEnergy(final long units) {
+        final long currentLevel = level.get();
+        if (units > 0 && currentLevel >= units) {
+            boolean flag = level.compareAndSet(currentLevel, currentLevel - units);
+            //logger.info("Used units : " + units + " level : " + level.get());
+            return flag;
+        }
+        return false;
+    }
 
-	public synchronized boolean stopEnergySource(){
+	public synchronized void stopEnergySource(){
         logger.debug("Change the Status.");
-        keepRunning = false;
         replenishTask.cancel(false);
         replenishTimer.shutdown();
-        return keepRunning;
 	}
 
-    public synchronized void replenish() {
-        logger.debug("Ready add level");
-        if (level < MAXLEVEL) level++;
+    public void replenish() {
+        //logger.debug("Ready add level");
+        if (level.get() < MAXLEVEL) level.incrementAndGet();
     }
 }
